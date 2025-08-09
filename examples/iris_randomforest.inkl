@@ -1,0 +1,5 @@
+dataset iris from "iris.csv" print "Loaded iris dataset"
+
+acc = train rf1 with iris using RandomForest for 1 epochs if acc > 0.9: print "Great accuracy!" predict rf1 with iris savemodel rf1 to "rf1.pkl"
+
+print "Done."

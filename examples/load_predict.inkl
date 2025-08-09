@@ -1,0 +1,5 @@
+dataset custom from "custom.csv" print "Loaded custom dataset"
+
+loadmodel rf_saved from "rf1.pkl" predict rf_saved with custom
+
+print "Prediction complete."

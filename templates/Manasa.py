@@ -1,0 +1,2 @@
+M=("Bumrah")
+print(M)

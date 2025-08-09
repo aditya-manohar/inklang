@@ -1,0 +1,1 @@
+print "Starting MNIST training..." dataset mnist from "mnist" acc = train nn1 with mnist using NeuralNetwork for 10 epochs if acc > 0.95: print "Excellent accuracy!" savemodel nn1 to "Uploads\mnist_model.pkl" print "Training complete."

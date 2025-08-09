@@ -1,0 +1,74 @@
+body {
+    background-color: #111;
+    color: white;
+    font-family: monospace;
+}
+
+header {
+    margin-bottom: 12px;
+}
+
+.container {
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.example-btn {
+    background: #00ffcc;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+}
+
+main {
+    display: flex;
+    gap: 20px;
+}
+
+.editor-area {
+    flex: 1;
+}
+
+.doc-area {
+    width: 360px;
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.controls {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+button {
+    padding: 8px 12px;
+    background: #0b69ff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    filter: brightness(.95);
+}
+
+.output {
+    background: #0f1724;
+    color: #bfffc7;
+    padding: 12px;
+    border-radius: 6px;
+    min-height: 120px;
+    overflow: auto;
+}
+
+pre {
+    font-family: monospace;
+    font-size: 13px;
+}

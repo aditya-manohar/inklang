@@ -1,0 +1,5 @@
+print "Starting demo..."
+
+repeat 3 times: print "Hello, Inklang!"
+
+acc = train nn2 with mnist for 2 epochs if acc >= 0.9: print "Good enough!" savemodel nn2 to "nn2_model.pkl"

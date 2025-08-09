@@ -1,0 +1,1 @@
+print "Training on MNIST..." acc = train model1 with mnist for 2 epochs if acc > 0.9: print "Solid performance!" savemodel model1 to "model1.pkl" print "Done."

@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inklang — Machine Learning Simplified</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'inklang-primary': '#2563eb',
+                        'inklang-accent': '#7c3aed',
+                        'inklang-dark': '#0f172a',
+                        'inklang-light': '#f8fafc',
+                        'inklang-neon': '#FF2E63', // Keeping original for some elements
+                        'inklang-electric': '#00DDEB' // Keeping original for some elements
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'mono': ['Fira Code', 'monospace'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 10px #FF2E63' },
+                            '50%': { boxShadow: '0 0 20px #00DDEB' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <script>
+        window.MonacoEnvironment = { getWorkerUrl: () => `data:text/javascript,/*monaco-worker*/` };
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
+    </script>
+    <style>
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(90deg, #FF2E63, #00DDEB);
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 0.5rem;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2.5rem;
+            background: #0f172a;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .code-block pre {
+            position: relative;
+            margin-top: 2.5rem;
+        }
+
+        .editor-container {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .dark .editor-container {
+            border-color: #334155;
+        }
+
+        .btn-glow {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 46, 99, 0.5);
+        }
+
+        .animate-pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .feature-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen font-sans text-slate-800 dark:text-slate-200 bg-inklang-light dark:bg-inklang-dark">
+    <div id="particles-js"></div>
+    <header class="py-8 px-4 relative">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg class="w-8 h-8 text-inklang-primary" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L3 7L12 12L21 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M3 12L12 17L21 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M3 17L12 22L21 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <h1 class="text-2xl font-bold">Inklang</h1>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#features" class="font-medium hover:text-inklang-primary transition-colors">Features</a>
+                <a href="#playground" class="font-medium hover:text-inklang-primary transition-colors">Playground</a>
+                <a href="#examples" class="font-medium hover:text-inklang-primary transition-colors">Examples</a>
+                <a href="/docs" class="font-medium hover:text-inklang-primary transition-colors">Docs</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button id="themeToggle"
+                    class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <svg id="themeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+                <a href="#playground"
+                    class="px-4 py-2 bg-inklang-primary text-white rounded-md font-medium hover:bg-blue-700 transition-colors">Try
+                    It</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="py-20 px-4 relative">
+        <div class="container mx-auto max-w-5xl text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                <span class="gradient-text">Machine Learning</span><br>
+                <span class="text-4xl md:text-5xl font-semibold">without the complexity</span>
+            </h1>
+            <p class="text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-3xl mx-auto">
+                Inklang is a minimalist language for training and deploying machine learning models with elegant syntax.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#playground"
+                    class="px-8 py-4 bg-inklang-neon text-white rounded-md font-bold hover:bg-pink-600 transition-colors ease-linear btn-glow">
+                    Launch Playground
+                </a>
+                <a href="/docs"
+                    class="px-8 py-4 border border-slate-300 dark:border-slate-700 rounded-md font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    Read Documentation
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-20 px-4 bg-white dark:bg-slate-900">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-16">Why Developers can use Inklang</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="feature-card bg-slate-50 dark:bg-slate-800 p-8 rounded-xl animate-fade-in">
+                    <div
+                        class="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-inklang-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Expressive Syntax</h3>
+                    <p class="text-slate-600 dark:text-slate-400">
+                        Clean, readable code that focuses on what matters - your models and data.
+                    </p>
+                </div>
+                <div class="feature-card bg-slate-50 dark:bg-slate-800 p-8 rounded-xl animate-fade-in">
+                    <div
+                        class="w-12 h-12 bg-cyan-100 dark:bg-cyan-900/30 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-inklang-electric" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Powerful ML</h3>
+                    <p class="text-slate-600 dark:text-slate-400">
+                        Built-in support for neural networks, random forests, and other popular algorithms.
+                    </p>
+                </div>
+                <div class="feature-card bg-slate-50 dark:bg-slate-800 p-8 rounded-xl animate-fade-in">
+                    <div
+                        class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Production Ready</h3>
+                    <p class="text-slate-600 dark:text-slate-400">
+                        Export trained models to standard formats for deployment anywhere.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="playground" class="py-20 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12">Inklang Playground</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="editor-container">
+                        <div id="editor" style="height:500px;"></div>
+                    </div>
+                    <div class="mt-6 flex flex-col sm:flex-row gap-4">
+                        <button id="runBtn"
+                            class="px-6 py-3 bg-inklang-neon text-white rounded-md font-medium hover:bg-pink-600 transition-colors flex items-center justify-center btn-glow">
+                            <svg id="runIcon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Run Code
+                        </button>
+                        <select id="examples"
+                            class="px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-800 dark:text-slate-200">
+                            <option value="">Load example...</option>
+                            <option value="mnist_neural.inkl">MNIST Neural Network</option>
+                            <option value="iris_randomforest.inkl">Iris RandomForest</option>
+                            <option value="repeat_example.inkl">Repeat Demo</option>
+                            <option value="load_predict.inkl">Load & Predict</option>
+                            <option value="program.inkl">Simple MNIST</option>
+                        </select>
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold mb-3">Output</h3>
+                        <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-md min-h-32">
+                            <pre id="output"
+                                class="font-mono text-sm overflow-auto max-h-64">Ready to run your Inklang code...</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-1">
+                    <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl sticky top-6">
+                        <h3 class="text-xl font-bold mb-4">Quick Reference</h3>
+                        <div class="code-block mb-6">
+                            <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Load dataset
+dataset iris from "iris.csv"
+
+# Train model
+acc = train rf1 with iris 
+  using RandomForest for 10 epochs
+
+# Conditional logic
+if acc > 0.9:
+    print "Excellent model!"
+
+# Repeat operations
+repeat 3 times:
+    print "Training..."
+
+# Make predictions
+predict rf1 with iris
+
+# Save/load models
+savemodel rf1 to "model.pkl"
+loadmodel rf_saved from "model.pkl"</code></pre>
+                        </div>
+                        <div class="text-sm text-slate-600 dark:text-slate-400 space-y-3">
+                            <p><span class="font-bold">Note:</span> The last column in your CSV/JSON is automatically
+                                used as the target variable.</p>
+                            <p>All code execution happens server-side with proper sandboxing.</p>
+                            <p>Trained models are automatically downloaded as .pkl files.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="examples" class="py-20 px-4 bg-white dark:bg-slate-900">
+        <div class="container mx-auto max-w-7xl">
+            <h2 class="text-4xl font-bold text-center mb-12">Code Examples</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3">MNIST Classifier</h3>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Train neural network on MNIST
+acc = train nn1 with mnist 
+  for 5 epochs
+
+if acc > 0.95:
+    print "Excellent accuracy!"
+
+savemodel nn1 to "mnist_nn.pkl"</code></pre>
+                    </div>
+                    <button class="text-sm text-inklang-primary hover:underline"
+                        onclick="loadExample('mnist_neural.inkl')">
+                        Load this example
+                    </button>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3">Iris Classifier</h3>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Train RandomForest on Iris
+dataset iris from "iris.csv"
+acc = train rf1 with iris 
+  using RandomForest for 100 epochs
+
+print "Accuracy:", acc
+predict rf1 with iris</code></pre>
+                    </div>
+                    <button class="text-sm text-inklang-primary hover:underline"
+                        onclick="loadExample('iris_randomforest.inkl')">
+                        Load this example
+                    </button>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3">Repeat Demo</h3>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>print "Starting demo..."
+
+repeat 3 times: 
+    print "Hello, Inklang!"
+
+acc = train nn2 with mnist 
+  for 2 epochs
+
+if acc >= 0.9: 
+    print "Good enough!"</code></pre>
+                    </div>
+                    <button class="text-sm text-inklang-primary hover:underline"
+                        onclick="loadExample('repeat_example.inkl')">
+                        Load this example
+                    </button>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3">Load & Predict</h3>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>dataset custom from "custom.csv"
+print "Loaded custom dataset"
+
+loadmodel rf_saved from "rf1.pkl"
+predict rf_saved with custom
+
+print "Prediction complete."</code></pre>
+                    </div>
+                    <button class="text-sm text-inklang-primary hover:underline"
+                        onclick="loadExample('load_predict.inkl')">
+                        Load this example
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-4 bg-slate-900 text-slate-400">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Inklang</h3>
+                    <p class="text-sm">
+                        A minimalist language for machine learning with elegant syntax and powerful capabilities.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Resources</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/docs" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="/tutorials" class="hover:text-white transition-colors">Tutorials</a></li>
+                        <li><a href="/examples" class="hover:text-white transition-colors">Examples</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Community</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/discord" class="hover:text-white transition-colors">Discord</a></li>
+                        <li><a href="/github" class="hover:text-white transition-colors">GitHub</a></li>
+                        <li><a href="/twitter" class="hover:text-white transition-colors">Twitter</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Legal</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="/license" class="hover:text-white transition-colors">License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 mt-12 pt-8 text-center text-sm">
+                <p>&copy; 2025 Inklang. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#FF2E63' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#00DDEB', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: 'none', random: true }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' } },
+                modes: { grab: { distance: 200, line_linked: { opacity: 1 } }, push: { particles_nb: 5 } }
+            },
+            retina_detect: true
+        });
+
+        // Initialize Monaco Editor
+        let editor = null;
+        require(['vs/editor/editor.main'], function () {
+            monaco.languages.register({ id: 'inklang' });
+            monaco.languages.setMonarchTokensProvider('inklang', {
+                tokenizer: {
+                    root: [
+                        [/^(print|dataset|train|if|repeat|predict|savemodel|loadmodel)/, 'keyword'],
+                        [/".*?"/, 'string'],
+                        [/#.*$/, 'comment'],
+                        [/[0-9]+(\.[0-9]+)?/, 'number'],
+                        [/=/, 'operator'],
+                        [/(>|<|==|>=|<=|!=)/, 'operator'],
+                    ]
+                }
+            });
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: `print "Welcome to Inklang!"
+# Example: Train a RandomForest model
+dataset iris from "iris.csv"
+acc = train rf1 with iris using RandomForest for 1 epochs
+if acc > 0.9:
+    print "Great accuracy!"
+savemodel rf1 to "rf1.pkl"
+`,
+                language: 'inklang',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontFamily: 'Fira Code',
+                fontSize: 14,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false
+            });
+
+            function syncEditorTheme() {
+                const isDark = document.documentElement.classList.contains('dark');
+                monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
+            }
+            syncEditorTheme();
+        });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeIcon.innerHTML = isDark ?
+                `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />` :
+                `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />`;
+            if (editor) monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
+        });
+
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark' ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'))) {
+            document.documentElement.classList.add('dark');
+            themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />`;
+        }
+
+        // Run button functionality
+        document.getElementById('runBtn').addEventListener('click', async () => {
+            const runBtn = document.getElementById('runBtn');
+            const runIcon = document.getElementById('runIcon');
+            const output = document.getElementById('output');
+
+            runBtn.disabled = true;
+            runIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />`;
+            output.textContent = 'Running your code...';
+
+            try {
+                const code = editor.getValue();
+                const res = await fetch('/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code }),
+                    signal: AbortSignal.timeout(125000) // 125s timeout
+                });
+
+                const j = await res.json();
+                output.textContent = j.ok ? (j.output || "(no output)") : `Error: ${j.error || "Execution failed"}`;
+
+                if (j.ok && j.pkl_path) {
+                    const link = document.createElement('a');
+                    link.href = `/download/${encodeURIComponent(j.pkl_path)}`;
+                    link.download = j.pkl_path;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else if (j.pkl_path) {
+                    output.textContent += `\nWarning: PKL file '${j.pkl_path}' was not generated due to errors.`;
+                }
+            } catch (e) {
+                output.textContent = `Error: ${e.message}`;
+                console.error('Fetch error:', e);
+            } finally {
+                runBtn.disabled = false;
+                runIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
+            }
+        });
+
+        // Example loader functionality
+        document.getElementById('examples').addEventListener('change', async function () {
+            const name = this.value;
+            if (!name) return;
+            try {
+                const r = await fetch(`/examples/${encodeURIComponent(name)}`);
+                if (r.ok) {
+                    const txt = await r.text();
+                    editor.setValue(txt);
+                } else {
+                    alert("Could not load example");
+                }
+            } catch (e) {
+                alert(`Error loading example: ${e.message}`);
+            }
+        });
+
+        // Helper function to load examples
+        async function loadExample(name) {
+            try {
+                // Scroll to playground smoothly
+                document.getElementById('playground').scrollIntoView({
+                    behavior: 'smooth'
+                });
+
+                let exampleContent = '';
+                switch (name) {
+                    case 'mnist_neural.inkl':
+                        exampleContent = `# Train neural network on MNIST
+acc = train nn1 with mnist for 3 epochs
+if acc > 0.95:
+    print "Excellent!"
+savemodel nn1 to "mnist_model.pkl"`;
+                        break;
+                    case 'iris_randomforest.inkl':
+                        exampleContent = `# Train a RandomForest on Iris
+dataset iris from "iris.csv"
+acc = train rf1 with iris using RandomForest for 1 epochs
+if acc > 0.9:
+    print "Great accuracy!"
+savemodel rf1 to "rf1.pkl"`;
+                        break;
+                    case 'repeat_example.inkl':
+                        exampleContent = `print "Starting demo..."
+
+repeat 3 times: 
+    print "Hello, Inklang!"
+
+acc = train nn2 with mnist for 2 epochs
+if acc >= 0.9: 
+    print "Good enough!" 
+savemodel nn2 to "nn2_model.pkl"`;
+                        break;
+                    case 'load_predict.inkl':
+                        exampleContent = `dataset custom from "custom.csv"
+print "Loaded custom dataset"
+
+loadmodel rf_saved from "rf1.pkl"
+predict rf_saved with custom
+
+print "Prediction complete."`;
+                        break;
+                    case 'program.inkl':
+                        exampleContent = `print "Welcome to Inklang!"
+# Example: Train a RandomForest model
+dataset iris from "iris.csv"
+acc = train rf1 with iris using RandomForest for 1 epochs
+if acc > 0.9:
+    print "Great accuracy!"
+savemodel rf1 to "rf1.pkl"`;
+                        break;
+                    default:
+                        return;
+                }
+
+                editor.setValue(exampleContent);
+            } catch (e) {
+                console.error('Error loading example:', e);
+            }
+        }
+
+        // Update the event listener for examples dropdown
+        document.getElementById('examples').addEventListener('change', async function () {
+            const name = this.value;
+            if (!name) return;
+            await loadExample(name);
+        });
+    </script>
+</body>
+
+</html>
