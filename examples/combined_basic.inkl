@@ -1,0 +1,8 @@
+# Combine print, if, and repeat
+print "Starting check..."
+repeat 2 times:
+    acc = train model1 with iris for 1 epochs
+    if acc > 0.85:
+        print "Accuracy is high!"
+    print "Iteration done."
+print "All checks complete."

@@ -1,0 +1,4 @@
+# Simple loop with print
+repeat 5 times:
+    print "Hello, Inklang!"
+print "Loop done."

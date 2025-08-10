@@ -68,20 +68,10 @@
             position: relative;
         }
 
-        .code-block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2.5rem;
-            /* background: #0f172a; */
-            border-radius: 0.5rem 0.5rem 0 0;
-        }
-
         .code-block pre {
             position: relative;
-            margin-top: 2.5rem;
+            margin: 0;
+            padding: 1rem;
         }
 
         .editor-container {
@@ -255,6 +245,9 @@
                         <select id="examples"
                             class="px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-800 dark:text-slate-200">
                             <option value="">Load example...</option>
+                            <option value="basic_print_if.inkl">Basic Print and If</option>
+                            <option value="repeat_print.inkl">Repeat and Print Loop</option>
+                            <option value="combined_basic.inkl">Combined Basic Syntax</option>
                             <option value="mnist_neural.inkl">MNIST Neural Network</option>
                             <option value="iris_randomforest.inkl">Iris RandomForest</option>
                             <option value="repeat_example.inkl">Repeat Demo</option>
@@ -313,15 +306,57 @@ loadmodel rf_saved from "model.pkl"</code></pre>
             <h2 class="text-4xl font-bold text-center mb-12">Code Examples</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3">Basic Print and If</h3>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Basic conditional with print
+acc = train model1 with iris for 1 epochs
+if acc >= 0.8:
+    print "Model is good enough!"
+print "Check complete."</code></pre>
+                    </div>
+                    <button class="text-sm text-inklang-primary hover:underline"
+                        onclick="loadExample('basic_print_if.inkl')">
+                        Load this example
+                    </button>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3">Repeat and Print Loop</h3>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Simple loop with print
+repeat 5 times:
+    print "Hello, Inklang!"
+print "Loop done."</code></pre>
+                    </div>
+                    <button class="text-sm text-inklang-primary hover:underline"
+                        onclick="loadExample('repeat_print.inkl')">
+                        Load this example
+                    </button>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3">Combined Basic Syntax</h3>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Combine print, if, and repeat
+print "Starting check..."
+repeat 2 times:
+    acc = train model1 with iris for 1 epochs
+    if acc > 0.85:
+        print "Accuracy is high!"
+    print "Iteration done."
+print "All checks complete."</code></pre>
+                    </div>
+                    <button class="text-sm text-inklang-primary hover:underline"
+                        onclick="loadExample('combined_basic.inkl')">
+                        Load this example
+                    </button>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
                     <h3 class="text-xl font-bold mb-3">MNIST Classifier</h3>
                     <div class="code-block mb-4">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Train neural network on MNIST
 acc = train nn1 with mnist 
   for 5 epochs
-
 if acc > 0.95:
     print "Excellent accuracy!"
-
 savemodel nn1 to "mnist_nn.pkl"</code></pre>
                     </div>
                     <button class="text-sm text-inklang-primary hover:underline"
@@ -336,7 +371,6 @@ savemodel nn1 to "mnist_nn.pkl"</code></pre>
 dataset iris from "iris.csv"
 acc = train rf1 with iris 
   using RandomForest for 100 epochs
-
 print "Accuracy:", acc
 predict rf1 with iris</code></pre>
                     </div>
@@ -349,13 +383,10 @@ predict rf1 with iris</code></pre>
                     <h3 class="text-xl font-bold mb-3">Repeat Demo</h3>
                     <div class="code-block mb-4">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>print "Starting demo..."
-
 repeat 3 times: 
     print "Hello, Inklang!"
-
 acc = train nn2 with mnist 
   for 2 epochs
-
 if acc >= 0.9: 
     print "Good enough!"</code></pre>
                     </div>
@@ -369,10 +400,8 @@ if acc >= 0.9:
                     <div class="code-block mb-4">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>dataset custom from "custom.csv"
 print "Loaded custom dataset"
-
 loadmodel rf_saved from "rf1.pkl"
 predict rf_saved with custom
-
 print "Prediction complete."</code></pre>
                     </div>
                     <button class="text-sm text-inklang-primary hover:underline"
@@ -398,7 +427,7 @@ print "Prediction complete."</code></pre>
                     <ul class="space-y-2 text-sm">
                         <li><a href="/docs" class="hover:text-white transition-colors">Documentation</a></li>
                         <li><a href="/tutorials" class="hover:text-white transition-colors">Tutorials</a></li>
-                        <li><a href="/examples" class="hover:text-white transition-colors">Examples</a></li>
+                        <li><a href="/#examples" class="hover:text-white transition-colors">Examples</a></li>
                     </ul>
                 </div>
                 <div>
@@ -493,7 +522,7 @@ savemodel rf1 to "rf1.pkl"
             const isDark = document.documentElement.classList.contains('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             themeIcon.innerHTML = isDark ?
-                `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />` :
+                `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 0 0 1111.21 3 7 7 0 0021 12.79z" />` :
                 `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />`;
             if (editor) monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
         });

@@ -1,0 +1,6 @@
+# Basic conditional with print
+dataset iris from "iris.csv"
+acc = train model1 with iris for 1 epochs
+if acc >= 0.8:
+    print "Model is good enough!"
+print "Check complete."
