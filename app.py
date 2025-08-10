@@ -27,6 +27,10 @@ def index():
                 examples.append(p.name)
     return render_template("index.html", examples=examples)
 
+@app.route('/docs')
+def docs():
+    return render_template('doc.html')
+
 @app.route("/run", methods=["POST"])
 def run_code():
     logging.debug("Received /run request")

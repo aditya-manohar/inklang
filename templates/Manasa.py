@@ -1,2 +1,0 @@
-M=("Bumrah")
-print(M)

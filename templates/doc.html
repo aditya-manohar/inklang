@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inklang Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'inklang-primary': '#2563eb',
+                        'inklang-accent': '#7c3aed',
+                        'inklang-dark': '#0f172a',
+                        'inklang-light': '#f8fafc',
+                        'inklang-neon': '#FF2E63',
+                        'inklang-electric': '#00DDEB'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'mono': ['Fira Code', 'monospace'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 10px #FF2E63' },
+                            '50%': { boxShadow: '0 0 20px #00DDEB' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <script>
+        window.MonacoEnvironment = { getWorkerUrl: () => `data:text/javascript,/*monaco-worker*/` };
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
+    </script>
+    <style>
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(90deg, #FF2E63, #00DDEB);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 0.5rem;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2.5rem;
+            /* background: #0f172a; */
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .code-block pre {
+            position: relative;
+            margin-top: 2.5rem;
+        }
+
+        .btn-glow {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 46, 99, 0.5);
+        }
+
+        .animate-pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen font-sans text-slate-800 dark:text-slate-200 bg-inklang-light dark:bg-inklang-dark">
+    <div id="particles-js"></div>
+    <header class="py-8 px-4 relative">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg class="w-8 h-8 text-inklang-primary" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L3 7L12 12L21 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M3 12L12 17L21 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M3 17L12 22L21 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <h1 class="text-2xl font-bold">Inklang</h1>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/#features" class="font-medium hover:text-inklang-primary transition-colors">Features</a>
+                <a href="/#playground" class="font-medium hover:text-inklang-primary transition-colors">Playground</a>
+                <a href="/#examples" class="font-medium hover:text-inklang-primary transition-colors">Examples</a>
+                <a href="/docs" class="font-medium text-inklang-primary">Docs</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button id="themeToggle"
+                    class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <svg id="themeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+                <a href="/#playground"
+                    class="px-4 py-2 bg-inklang-primary text-white rounded-md font-medium hover:bg-blue-700 transition-colors">Try
+                    It</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="py-20 px-4 relative">
+        <div class="container mx-auto max-w-5xl">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 text-center">
+                <span class="gradient-text">Inklang Documentation</span>
+            </h1>
+            <p class="text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-3xl mx-auto text-center">
+                Learn the syntax of Inklang, a minimalist language for training and deploying machine learning models
+                with elegant syntax.
+            </p>
+        </div>
+    </section>
+
+    <section id="syntax" class="py-20 px-4 bg-white dark:bg-slate-900">
+        <div class="container mx-auto max-w-5xl">
+            <h2 class="text-4xl font-bold mb-12">Syntax Overview</h2>
+            <p class="text-lg text-slate-600 dark:text-slate-400 mb-8">
+                Inklang is designed for simplicity, focusing on machine learning workflows. It supports a small set of
+                statements for loading datasets, training models, making predictions, and controlling flow with
+                conditionals and loops. Below is a detailed guide to each statement, including syntax, usage, and
+                examples.
+            </p>
+            <h3 class="text-2xl font-bold mb-6">General Rules</h3>
+            <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 space-y-2 mb-8">
+                <li><strong>Tokens</strong>: Identifiers (<code>NAME</code>: e.g., <code>mnist</code>,
+                    <code>nn1</code>), quoted strings (<code>STRING</code>: e.g., <code>"iris.csv"</code>), numbers
+                    (<code>NUMBER</code>: e.g., <code>10</code>, <code>0.95</code>), and comparison operators
+                    (<code>CMP_OP</code>: <code>></code>, <code><</code>, <code>==</code>, <code>>=</code>,
+                    <code><=</code>, <code>!=</code>).
+                </li>
+                <li><strong>Comments</strong>: Single-line comments start with <code>#</code> (e.g.,
+                    <code># Example</code>).
+                </li>
+                <li><strong>Indentation</strong>: Not required for parsing (whitespace is ignored), but recommended (4
+                    spaces or 1 tab) for readability in <code>if</code> and <code>repeat</code> blocks.</li>
+                <li><strong>Block Delimiters</strong>: Use <code>:</code> to start blocks in <code>if</code> and
+                    <code>repeat</code> statements.
+                </li>
+            </ul>
+
+            <h3 class="text-2xl font-bold mb-6">Statements</h3>
+
+            <div class="space-y-12">
+                <!-- Print Statement -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Print Statement</h4>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Outputs a message to the console or website
+                        output.</p>
+                    <p class="font-bold mb-2">Syntax:</p>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>print STRING</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
+                    <div class="code-block">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>print "Hello, Inklang!"</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2">Output: <code>[inklang] Hello, Inklang!</code>
+                    </p>
+                </div>
+
+                <!-- Dataset Statement -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Dataset Statement</h4>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Loads a dataset into memory from a file or
+                        built-in dataset.</p>
+                    <p class="font-bold mb-2">Syntax:</p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>dataset NAME from STRING</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
+                    <div class="code-block">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>dataset iris from "Uploads\iris.csv"
+dataset mnist from "mnist"</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: <code>NAME</code> is the dataset
+                        identifier; <code>STRING</code> is a file path or built-in dataset name.</p>
+                </div>
+
+                <!-- Train Statement -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Train Statement</h4>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Trains a model and stores its accuracy in the
+                        <code>acc</code> variable.
+                    </p>
+                    <p class="font-bold mb-2">Syntax:</p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>acc = train NAME with NAME ["using" NAME] for NUMBER epochs</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
+                    <div class="code-block">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>acc = train nn1 with mnist using NeuralNetwork for 10 epochs
+acc = train rf1 with iris for 100 epochs</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: <code>using NAME</code> is optional
+                        (defaults to <code>NeuralNetwork</code>); <code>NUMBER</code> must be an integer.</p>
+                </div>
+
+                <!-- Predict Statement -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Predict Statement</h4>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Makes predictions using a trained model on a
+                        dataset.</p>
+                    <p class="font-bold mb-2">Syntax:</p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>predict NAME with NAME</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
+                    <div class="code-block">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>predict nn1 with mnist</code></pre>
+                    </div>
+                </div>
+
+                <!-- Save Model Statement -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Save Model Statement</h4>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Saves a trained model to a file.</p>
+                    <p class="font-bold mb-2">Syntax:</p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>savemodel NAME to STRING</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
+                    <div class="code-block">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>savemodel nn1 to "Uploads\mnist_model.pkl"</code></pre>
+                    </div>
+                </div>
+
+                <!-- Load Model Statement -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Load Model Statement</h4>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Loads a model from a file.</p>
+                    <p class="font-bold mb-2">Syntax:</p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>loadmodel NAME from STRING</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
+                    <div class="code-block">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>loadmodel nn1 from "Uploads\mnist_model.pkl"</code></pre>
+                    </div>
+                </div>
+
+                <!-- If Statement -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">If Statement</h4>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Executes statements based on the <code>acc</code>
+                        variable’s value.</p>
+                    <p class="font-bold mb-2">Syntax:</p>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>if acc CMP_OP NUMBER :
+    statement+</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
+                    <div class="code-block">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>if acc > 0.95:
+    print "Excellent accuracy!"
+    savemodel nn1 to "Uploads\model.pkl"</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: <code>CMP_OP</code> is <code>></code>,
+                        <code><</code>, <code>==</code>, <code>>=</code>, <code><=</code>, or <code>!=</code>.
+                        Indentation is recommended but not required.
+                    </p>
+                </div>
+
+                <!-- Repeat Statement -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Repeat Statement</h4>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Repeats a block of statements a fixed number of
+                        times.</p>
+                    <p class="font-bold mb-2">Syntax:</p>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>repeat NUMBER times :
+    statement+</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
+                    <div class="code-block">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>repeat 3 times:
+    print "Training iteration"
+    acc = train nn1 with mnist for 5 epochs</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: <code>NUMBER</code> must be an integer.
+                        Indentation is recommended but not required.</p>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold mb-6 mt-12">Quick Reference</h3>
+            <div class="code-block">
+                <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Print a message
+print "Hello, Inklang!"
+
+# Load dataset
+dataset NAME from STRING
+
+# Train model
+acc = train NAME with NAME [using NAME] for NUMBER epochs
+
+# Make predictions
+predict NAME with NAME
+
+# Save/load models
+savemodel NAME to STRING
+loadmodel NAME from STRING
+
+# Conditional logic
+if acc CMP_OP NUMBER :
+    statement+
+
+# Repeat loop
+repeat NUMBER times :
+    statement+
+
+# Comments
+# This is a comment</code></pre>
+            </div>
+            <p class="text-slate-600 dark:text-slate-400 mt-4">Note: Indentation is optional but recommended (4 spaces
+                or 1 tab) for readability in <code>if</code> and <code>repeat</code> blocks.</p>
+        </div>
+    </section>
+
+    <footer class="py-12 px-4 bg-slate-900 text-slate-400">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Inklang</h3>
+                    <p class="text-sm">A minimalist language for machine learning with elegant syntax and powerful
+                        capabilities.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Resources</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/docs" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="/tutorials" class="hover:text-white transition-colors">Tutorials</a></li>
+                        <li><a href="/#examples" class="hover:text-white transition-colors">Examples</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Community</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/discord" class="hover:text-white transition-colors">Discord</a></li>
+                        <li><a href="/github" class="hover:text-white transition-colors">GitHub</a></li>
+                        <li><a href="/twitter" class="hover:text-white transition-colors">Twitter</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Legal</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="/license" class="hover:text-white transition-colors">License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 mt-12 pt-8 text-center text-sm">
+                <p>&copy; 2025 Inklang. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#FF2E63' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#00DDEB', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: 'none', random: true }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' } },
+                modes: { grab: { distance: 200, line_linked: { opacity: 1 } }, push: { particles_nb: 5 } }
+            },
+            retina_detect: true
+        });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeIcon.innerHTML = isDark ?
+                `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />` :
+                `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />`;
+        });
+
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark' ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'))) {
+            document.documentElement.classList.add('dark');
+            themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />`;
+        }
+    </script>
+</body>
+
+</html>
