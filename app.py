@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 APP_ROOT = pathlib.Path(__file__).parent.resolve()
 INKLANG_PY = str(APP_ROOT / "inklang.py")
-UPLOAD_FOLDER = APP_ROOT / "Uploads"
+UPLOAD_FOLDER = APP_ROOT / "uploads"  # Changed to lowercase 'uploads' for consistency with ml.py
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
