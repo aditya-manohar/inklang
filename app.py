@@ -35,6 +35,10 @@ def docs():
 def datasets():
     return render_template('datasets.html')
 
+@app.route('/uploads/<filename>')
+def serve_uploaded_file(filename):
+    return send_from_directory('uploads', filename)
+
 @app.route("/run", methods=["POST"])
 def run_code():
     logging.debug("Received /run request")
