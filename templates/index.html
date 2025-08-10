@@ -51,6 +51,17 @@
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
     </script>
     <style>
+        body {
+            transform: scale(0.75);
+            transform-origin: top left;
+            width: 133.33vw;
+            /* Compensates for 75% scale: 100 / 0.75 = 133.33% */
+            height: 133.33vh;
+            /* Compensates for 75% scale */
+            overflow-x: hidden;
+            /* Prevents horizontal scrollbar */
+        }
+
         .gradient-text {
             background-clip: text;
             -webkit-background-clip: text;
