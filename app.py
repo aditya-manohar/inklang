@@ -31,6 +31,10 @@ def index():
 def docs():
     return render_template('doc.html')
 
+@app.route('/datasets')
+def datasets():
+    return render_template('datasets.html')
+
 @app.route("/run", methods=["POST"])
 def run_code():
     logging.debug("Received /run request")
