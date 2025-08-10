@@ -74,6 +74,31 @@
             padding: 1rem;
         }
 
+        .code-block pre::-webkit-scrollbar {
+            width: 8px;
+            /* Width of the vertical scrollbar */
+            height: 8px;
+            /* Height of the horizontal scrollbar */
+        }
+
+        .code-block pre::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+
+        .code-block pre::-webkit-scrollbar-thumb {
+            background: #FF2E63;
+            border-radius: 4px;
+        }
+
+        /* For Firefox */
+        .code-block pre {
+            scrollbar-width: thin;
+            /* Thin scrollbar */
+            scrollbar-color: #FF2E63 #1e293b;
+            /* Thumb and track colors */
+        }
+
         .editor-container {
             border: 1px solid #e2e8f0;
             border-radius: 0.5rem;
@@ -309,6 +334,7 @@ loadmodel rf_saved from "model.pkl"</code></pre>
                     <h3 class="text-xl font-bold mb-3">Basic Print and If</h3>
                     <div class="code-block mb-4">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Basic conditional with print
+dataset iris from "iris.csv"
 acc = train model1 with iris for 1 epochs
 if acc >= 0.8:
     print "Model is good enough!"
@@ -336,6 +362,7 @@ print "Loop done."</code></pre>
                     <h3 class="text-xl font-bold mb-3">Combined Basic Syntax</h3>
                     <div class="code-block mb-4">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Combine print, if, and repeat
+dataset iris from "iris.csv"
 print "Starting check..."
 repeat 2 times:
     acc = train model1 with iris for 1 epochs
@@ -590,6 +617,7 @@ savemodel rf1 to "rf1.pkl"
                 switch (name) {
                     case 'basic_print_if.inkl':
                         exampleContent = `# Basic conditional with print
+dataset iris from "iris.csv"
 acc = train model1 with iris for 1 epochs
 if acc >= 0.8:
     print "Model is good enough!"
@@ -603,6 +631,7 @@ print "Loop done."`;
                         break;
                     case 'combined_basic.inkl':
                         exampleContent = `# Combine print, if, and repeat
+dataset iris from "iris.csv"
 print "Starting check..."
 repeat 2 times:
     acc = train model1 with iris for 1 epochs
