@@ -70,10 +70,38 @@
             scroll-behavior: smooth;
         }
 
+        .example-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            /* Ensure cards stretch to equal height */
+            position: relative;
+            /* For absolute positioning of the button */
+        }
+
         .code-block {
+            flex-grow: 1;
+            /* Allow code block to take available space */
             background: #1e293b;
             border-radius: 0.5rem;
             position: relative;
+            margin-bottom: 2.5rem;
+            /* Space for the button */
+        }
+
+        .load-example-btn {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .load-example-btn:hover {
+            color: #1e40af;
+            transition: .3s;
+            /* Darker shade on hover */
         }
 
         .code-block pre {
@@ -84,9 +112,7 @@
 
         .code-block pre::-webkit-scrollbar {
             width: 8px;
-            /* Width of the vertical scrollbar */
             height: 8px;
-            /* Height of the horizontal scrollbar */
         }
 
         .code-block pre::-webkit-scrollbar-track {
@@ -99,12 +125,9 @@
             border-radius: 4px;
         }
 
-        /* For Firefox */
         .code-block pre {
             scrollbar-width: thin;
-            /* Thin scrollbar */
-            scrollbar-color: #FF2E63 #1e293b;
-            /* Thumb and track colors */
+            scrollbar-color: #1e293b #1e293b;
         }
 
         .editor-container {
@@ -341,9 +364,9 @@ loadmodel rf_saved from "model.pkl"</code></pre>
         <div class="container mx-auto max-w-7xl">
             <h2 class="text-4xl font-bold text-center mb-12">Code Examples</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                <div class="example-card bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
                     <h3 class="text-xl font-bold mb-3">Basic Print and If</h3>
-                    <div class="code-block mb-4">
+                    <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Basic conditional with print
 dataset iris from "iris.csv"
 acc = train model1 with iris for 1 epochs
@@ -351,27 +374,21 @@ if acc >= 0.8:
     print "Model is good enough!"
 print "Check complete."</code></pre>
                     </div>
-                    <button class="load-example-btn text-sm text-inklang-primary hover:underline"
-                        data-example="basic_print_if.inkl">
-                        Load this example
-                    </button>
+                    <button class="load-example-btn" data-example="basic_print_if.inkl">Load this example</button>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                <div class="example-card bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
                     <h3 class="text-xl font-bold mb-3">Repeat and Print Loop</h3>
-                    <div class="code-block mb-4">
+                    <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Simple loop with print
 repeat 5 times:
     print "Hello, Inklang!"
 print "Loop done."</code></pre>
                     </div>
-                    <button class="load-example-btn text-sm text-inklang-primary hover:underline"
-                        data-example="repeat_print.inkl">
-                        Load this example
-                    </button>
+                    <button class="load-example-btn" data-example="repeat_print.inkl">Load this example</button>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                <div class="example-card bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
                     <h3 class="text-xl font-bold mb-3">Combined Basic Syntax</h3>
-                    <div class="code-block mb-4">
+                    <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Combine print, if, and repeat
 dataset iris from "iris.csv"
 print "Starting check..."
@@ -382,14 +399,11 @@ repeat 2 times:
     print "Iteration done."
 print "All checks complete."</code></pre>
                     </div>
-                    <button class="load-example-btn text-sm text-inklang-primary hover:underline"
-                        data-example="combined_basic.inkl">
-                        Load this example
-                    </button>
+                    <button class="load-example-btn" data-example="combined_basic.inkl">Load this example</button>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                <div class="example-card bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
                     <h3 class="text-xl font-bold mb-3">MNIST Classifier</h3>
-                    <div class="code-block mb-4">
+                    <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Train neural network on MNIST
 acc = train nn1 with mnist 
   for 5 epochs
@@ -397,14 +411,11 @@ if acc > 0.95:
     print "Excellent accuracy!"
 savemodel nn1 to "mnist_nn.pkl"</code></pre>
                     </div>
-                    <button class="load-example-btn text-sm text-inklang-primary hover:underline"
-                        data-example="mnist_neural.inkl">
-                        Load this example
-                    </button>
+                    <button class="load-example-btn" data-example="mnist_neural.inkl">Load this example</button>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                <div class="example-card bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
                     <h3 class="text-xl font-bold mb-3">Iris Classifier</h3>
-                    <div class="code-block mb-4">
+                    <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Train RandomForest on Iris
 dataset iris from "iris.csv"
 acc = train rf1 with iris 
@@ -412,14 +423,11 @@ acc = train rf1 with iris
 print "Accuracy:", acc
 predict rf1 with iris</code></pre>
                     </div>
-                    <button class="load-example-btn text-sm text-inklang-primary hover:underline"
-                        data-example="iris_randomforest.inkl">
-                        Load this example
-                    </button>
+                    <button class="load-example-btn" data-example="iris_randomforest.inkl">Load this example</button>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                <div class="example-card bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
                     <h3 class="text-xl font-bold mb-3">Repeat Demo</h3>
-                    <div class="code-block mb-4">
+                    <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>print "Starting demo..."
 repeat 3 times: 
     print "Hello, Inklang!"
@@ -428,24 +436,18 @@ acc = train nn2 with mnist
 if acc >= 0.9: 
     print "Good enough!"</code></pre>
                     </div>
-                    <button class="load-example-btn text-sm text-inklang-primary hover:underline"
-                        data-example="repeat_example.inkl">
-                        Load this example
-                    </button>
+                    <button class="load-example-btn" data-example="repeat_example.inkl">Load this example</button>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                <div class="example-card bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
                     <h3 class="text-xl font-bold mb-3">Load & Predict</h3>
-                    <div class="code-block mb-4">
+                    <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>dataset custom from "custom.csv"
 print "Loaded custom dataset"
 loadmodel rf_saved from "rf1.pkl"
 predict rf_saved with custom
 print "Prediction complete."</code></pre>
                     </div>
-                    <button class="load-example-btn text-sm text-inklang-primary hover:underline"
-                        data-example="load_predict.inkl">
-                        Load this example
-                    </button>
+                    <button class="load-example-btn" data-example="load_predict.inkl">Load this example</button>
                 </div>
             </div>
         </div>
@@ -463,7 +465,7 @@ print "Prediction complete."</code></pre>
                     <h3 class="text-lg font-semibold text-white mb-4">Resources</h3>
                     <ul class="space-y-2 text-sm">
                         <li><a href="/docs" class="hover:text-white transition-colors">Documentation</a></li>
-                        <li><a href="/tutorials" class="hover:text-white transition-colors">Tutorials</a></li>
+                        <li><a href="/" class="hover:text-white transition-colors">Tutorials</a></li>
                         <li><a href="/#examples" class="hover:text-white transition-colors">Examples</a></li>
                     </ul>
                 </div>
