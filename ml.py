@@ -1,3 +1,4 @@
+# ml.py
 import os
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import tensorflow as tf
@@ -113,7 +114,7 @@ def predict_model(model, dataset):
 
 def save_model(model, path):
     try:
-        full_path = os.path.join("uploads", path)
+        full_path = os.path.join("Uploads", path)
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         with open(full_path, 'wb') as f:
             pickle.dump(model, f)
@@ -127,7 +128,7 @@ def save_model(model, path):
 
 def load_model(path):
     try:
-        full_path = os.path.join("uploads", path)
+        full_path = os.path.join("Uploads", path)
         with open(full_path, 'rb') as f:
             model = pickle.load(f)
         logging.debug(f"Loaded model from '{full_path}'")
@@ -137,3 +138,60 @@ def load_model(path):
         logging.error(f"Error loading model: {str(e)}")
         inkl_print(f"Error loading model: {str(e)}")
         return None
+    
+def preprocess_dataset(dataset, operation=None, value=None):
+    try:
+        if not isinstance(dataset, pd.DataFrame):
+            raise ValueError(f"[inklang] Dataset must be a DataFrame, got {type(dataset)}")
+        
+        if operation is None:
+            raise ValueError(f"[inklang] Invalid preprocess operation: {operation}")
+        
+        df = dataset.copy()
+        
+        if operation == "normalize":
+            from sklearn.preprocessing import MinMaxScaler
+            scaler = MinMaxScaler(feature_range=(0, float(value) if value else 1.0))
+            feature_cols = df.columns.drop('label') if 'label' in df.columns else df.columns
+            df[feature_cols] = scaler.fit_transform(df[feature_cols])
+            logging.debug(f"Normalized dataset: {len(df)} rows, {len(feature_cols)} features")
+        
+        elif operation == "standardize":
+            from sklearn.preprocessing import StandardScaler
+            scaler = StandardScaler()
+            feature_cols = df.columns.drop('label') if 'label' in df.columns else df.columns
+            df[feature_cols] = scaler.fit_transform(df[feature_cols])
+            logging.debug(f"Standardized dataset: {len(df)} rows, {len(feature_cols)} features")
+        
+        elif operation == "sample":
+            if value is None or not 0 < float(value) <= 1.0:
+                raise ValueError(f"[inklang] Sample ratio must be between 0 and 1, got {value}")
+            df = df.sample(frac=float(value), random_state=42)
+            logging.debug(f"Sampled dataset: {len(df)} rows (ratio={value})")
+        
+        elif operation == "dropna":
+            if value is not None:
+                raise ValueError(f"[inklang] dropna does not accept a value, got {value}")
+            original_rows = len(df)
+            df = df.dropna()
+            logging.debug(f"Dropped NA values: {original_rows} -> {len(df)} rows")
+        
+        elif operation == "onehot":
+            if value is not None:
+                raise ValueError(f"[inklang] onehot does not accept a value, got {value}")
+            feature_cols = df.columns.drop('label') if 'label' in df.columns else df.columns
+            categorical_cols = df[feature_cols].select_dtypes(include=['object', 'category']).columns
+            if not categorical_cols.empty:
+                df = pd.get_dummies(df, columns=categorical_cols, dtype=int)
+                logging.debug(f"One-hot encoded {len(categorical_cols)} columns: {list(categorical_cols)}")
+            else:
+                logging.debug("No categorical columns found for one-hot encoding")
+        
+        else:
+            raise ValueError(f"[inklang] Unknown preprocess operation: {operation}")
+        
+        return df
+    except Exception as e:
+        logging.error(f"Error during preprocessing: {str(e)}")
+        inkl_print(f"Error during preprocessing: {str(e)}")
+        raise

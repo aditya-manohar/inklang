@@ -17,8 +17,8 @@
                         'inklang-accent': '#7c3aed',
                         'inklang-dark': '#0f172a',
                         'inklang-light': '#f8fafc',
-                        'inklang-neon': '#FF2E63', // Keeping original for some elements
-                        'inklang-electric': '#00DDEB' // Keeping original for some elements
+                        'inklang-neon': '#FF2E63',
+                        'inklang-electric': '#00DDEB'
                     },
                     fontFamily: {
                         'sans': ['Inter', 'sans-serif'],
@@ -74,19 +74,15 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            /* Ensure cards stretch to equal height */
             position: relative;
-            /* For absolute positioning of the button */
         }
 
         .code-block {
             flex-grow: 1;
-            /* Allow code block to take available space */
             background: #1e293b;
             border-radius: 0.5rem;
             position: relative;
             margin-bottom: 2.5rem;
-            /* Space for the button */
         }
 
         .load-example-btn {
@@ -101,7 +97,6 @@
         .load-example-btn:hover {
             color: #1e40af;
             transition: .3s;
-            /* Darker shade on hover */
         }
 
         .code-block pre {
@@ -210,7 +205,6 @@
             </div>
         </div>
     </header>
-
     <section class="py-20 px-4 relative">
         <div class="container mx-auto max-w-5xl text-center">
             <h1 class="text-5xl md:text-6xl font-bold mb-6">
@@ -232,7 +226,6 @@
             </div>
         </div>
     </section>
-
     <section id="features" class="py-20 px-4 bg-white dark:bg-slate-900">
         <div class="container mx-auto">
             <h2 class="text-4xl font-bold text-center mb-16">Why Developers can use Inklang</h2>
@@ -280,7 +273,6 @@
             </div>
         </div>
     </section>
-
     <section id="playground" class="py-20 px-4">
         <div class="container mx-auto">
             <h2 class="text-4xl font-bold text-center mb-12">Inklang Playground</h2>
@@ -311,7 +303,7 @@
                             <option value="iris_randomforest.inkl">Iris RandomForest</option>
                             <option value="repeat_example.inkl">Repeat Demo</option>
                             <option value="load_predict.inkl">Load & Predict</option>
-                            <option value="program.inkl">Simple MNIST</option>
+                            <option value="preprocess_example.inkl">Data Preprocessing</option>
                         </select>
                     </div>
                     <div class="mt-8">
@@ -329,9 +321,15 @@
                             <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Load dataset
 dataset iris from "iris.csv"
 
+# Preprocess dataset
+preprocess iris with normalize to 1.0
+preprocess iris with standardize
+preprocess iris with sample to 0.5
+preprocess iris with dropna
+preprocess iris with onehot
+
 # Train model
-acc = train rf1 with iris 
-  using RandomForest for 10 epochs
+acc = train rf1 with iris using RandomForest for 10 epochs
 
 # Conditional logic
 if acc > 0.9:
@@ -359,7 +357,6 @@ loadmodel rf_saved from "model.pkl"</code></pre>
             </div>
         </div>
     </section>
-
     <section id="examples" class="py-20 px-4 bg-white dark:bg-slate-900">
         <div class="container mx-auto max-w-7xl">
             <h2 class="text-4xl font-bold text-center mb-12">Code Examples</h2>
@@ -405,8 +402,7 @@ print "All checks complete."</code></pre>
                     <h3 class="text-xl font-bold mb-3">MNIST Classifier</h3>
                     <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Train neural network on MNIST
-acc = train nn1 with mnist 
-  for 5 epochs
+acc = train nn1 with mnist for 5 epochs
 if acc > 0.95:
     print "Excellent accuracy!"
 savemodel nn1 to "mnist_nn.pkl"</code></pre>
@@ -418,8 +414,7 @@ savemodel nn1 to "mnist_nn.pkl"</code></pre>
                     <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Train RandomForest on Iris
 dataset iris from "iris.csv"
-acc = train rf1 with iris 
-  using RandomForest for 100 epochs
+acc = train rf1 with iris using RandomForest for 100 epochs
 print "Accuracy:", acc
 predict rf1 with iris</code></pre>
                     </div>
@@ -429,11 +424,10 @@ predict rf1 with iris</code></pre>
                     <h3 class="text-xl font-bold mb-3">Repeat Demo</h3>
                     <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>print "Starting demo..."
-repeat 3 times: 
+repeat 3 times:
     print "Hello, Inklang!"
-acc = train nn2 with mnist 
-  for 2 epochs
-if acc >= 0.9: 
+acc = train nn2 with mnist for 2 epochs
+if acc >= 0.9:
     print "Good enough!"</code></pre>
                     </div>
                     <button class="load-example-btn" data-example="repeat_example.inkl">Load this example</button>
@@ -448,6 +442,21 @@ predict rf_saved with custom
 print "Prediction complete."</code></pre>
                     </div>
                     <button class="load-example-btn" data-example="load_predict.inkl">Load this example</button>
+                </div>
+                <div class="example-card bg-slate-50 dark:bg-slate-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3">Data Preprocessing</h3>
+                    <div class="code-block">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Preprocess before training
+dataset iris from "iris.csv"
+preprocess iris with dropna
+preprocess iris with sample to 0.5
+preprocess iris with normalize to 1.0
+acc = train rf1 with iris using RandomForest for 10 epochs
+if acc > 0.9:
+    print "Great accuracy!"
+savemodel rf1 to "rf1.pkl"</code></pre>
+                    </div>
+                    <button class="load-example-btn" data-example="preprocess_example.inkl">Load this example</button>
                 </div>
             </div>
         </div>
@@ -477,8 +486,7 @@ print "Prediction complete."</code></pre>
                         <li><a href="https://github.com/aditya-manohar/inklang" target="_blank"
                                 class="hover:text-white transition-colors">GitHub</a></li>
                         <li><a href="https://x.com/ManoharAdi36395" class="hover:text-white transition-colors"
-                                target="_blank">X</a>
-                        </li>
+                                target="_blank">X</a></li>
                     </ul>
                 </div>
                 <div>
@@ -495,9 +503,7 @@ print "Prediction complete."</code></pre>
             </div>
         </div>
     </footer>
-
     <script>
-        // Initialize particles.js
         particlesJS('particles-js', {
             particles: {
                 number: { value: 80, density: { enable: true, value_area: 800 } },
@@ -515,20 +521,19 @@ print "Prediction complete."</code></pre>
             },
             retina_detect: true
         });
-
-        // Initialize Monaco Editor
         let editor = null;
         require(['vs/editor/editor.main'], function () {
             monaco.languages.register({ id: 'inklang' });
             monaco.languages.setMonarchTokensProvider('inklang', {
                 tokenizer: {
                     root: [
-                        [/^(print|dataset|train|if|repeat|predict|savemodel|loadmodel)/, 'keyword'],
+                        [/^(print|dataset|train|if|repeat|predict|savemodel|loadmodel|preprocess)/, 'keyword'],
                         [/".*?"/, 'string'],
                         [/#.*$/, 'comment'],
                         [/[0-9]+(\.[0-9]+)?/, 'number'],
                         [/=/, 'operator'],
                         [/(>|<|==|>=|<=|!=)/, 'operator'],
+                        [/(normalize|standardize|sample|dropna|onehot)/, 'keyword']
                     ]
                 }
             });
@@ -536,6 +541,7 @@ print "Prediction complete."</code></pre>
                 value: `print "Welcome to Inklang!"
 # Example: Train a RandomForest model
 dataset iris from "iris.csv"
+preprocess iris with normalize to 1.0
 acc = train rf1 with iris using RandomForest for 1 epochs
 if acc > 0.9:
     print "Great accuracy!"
@@ -549,15 +555,12 @@ savemodel rf1 to "rf1.pkl"
                 minimap: { enabled: false },
                 scrollBeyondLastLine: false
             });
-
             function syncEditorTheme() {
                 const isDark = document.documentElement.classList.contains('dark');
                 monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
             }
             syncEditorTheme();
         });
-
-        // Theme toggle functionality
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         themeToggle.addEventListener('click', () => {
@@ -569,36 +572,27 @@ savemodel rf1 to "rf1.pkl"
                 `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />`;
             if (editor) monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs');
         });
-
-        // Check for saved theme preference
-        if (localStorage.getItem('theme') === 'dark' ||
-            (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'))) {
+        if (localStorage.getItem('theme') === 'dark' || (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'))) {
             document.documentElement.classList.add('dark');
             themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />`;
         }
-
-        // Run button functionality
         document.getElementById('runBtn').addEventListener('click', async () => {
             const runBtn = document.getElementById('runBtn');
             const runIcon = document.getElementById('runIcon');
             const output = document.getElementById('output');
-
             runBtn.disabled = true;
             runIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />`;
             output.textContent = 'Running your code...';
-
             try {
                 const code = editor.getValue();
                 const res = await fetch('/run', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ code }),
-                    signal: AbortSignal.timeout(125000) // 125s timeout
+                    signal: AbortSignal.timeout(125000)
                 });
-
                 const j = await res.json();
                 output.textContent = j.ok ? (j.output || "(no output)") : `Error: ${j.error || "Execution failed"}`;
-
                 if (j.ok && j.pkl_path) {
                     const link = document.createElement('a');
                     link.href = `/download/${encodeURIComponent(j.pkl_path)}`;
@@ -617,15 +611,9 @@ savemodel rf1 to "rf1.pkl"
                 runIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
             }
         });
-
-        // Helper function to load examples
         async function loadExample(name) {
             try {
-                // Scroll to playground smoothly
-                document.getElementById('playground').scrollIntoView({
-                    behavior: 'smooth'
-                });
-
+                document.getElementById('playground').scrollIntoView({ behavior: 'smooth' });
                 let exampleContent = '';
                 switch (name) {
                     case 'basic_print_if.inkl':
@@ -670,11 +658,11 @@ savemodel rf1 to "rf1.pkl"`;
                         break;
                     case 'repeat_example.inkl':
                         exampleContent = `print "Starting demo..."
-repeat 3 times: 
+repeat 3 times:
     print "Hello, Inklang!"
 acc = train nn2 with mnist for 2 epochs
-if acc >= 0.9: 
-    print "Good enough!" 
+if acc >= 0.9:
+    print "Good enough!"
 savemodel nn2 to "nn2_model.pkl"`;
                         break;
                     case 'load_predict.inkl':
@@ -684,11 +672,13 @@ loadmodel rf_saved from "rf1.pkl"
 predict rf_saved with custom
 print "Prediction complete."`;
                         break;
-                    case 'program.inkl':
-                        exampleContent = `print "Welcome to Inklang!"
-# Example: Train a RandomForest model
+                    case 'preprocess_example.inkl':
+                        exampleContent = `# Preprocess before training
 dataset iris from "iris.csv"
-acc = train rf1 with iris using RandomForest for 1 epochs
+preprocess iris with dropna
+preprocess iris with sample to 0.5
+preprocess iris with normalize to 1.0
+acc = train rf1 with iris using RandomForest for 10 epochs
 if acc > 0.9:
     print "Great accuracy!"
 savemodel rf1 to "rf1.pkl"`;
@@ -696,26 +686,17 @@ savemodel rf1 to "rf1.pkl"`;
                     default:
                         return;
                 }
-
-                // Set editor content
                 editor.setValue(exampleContent);
-
-                // Update dropdown selection
-                const examplesDropdown = document.getElementById('examples');
-                examplesDropdown.value = name;
+                document.getElementById('examples').value = name;
             } catch (e) {
                 console.error('Error loading example:', e);
             }
         }
-
-        // Update the event listener for examples dropdown
         document.getElementById('examples').addEventListener('change', async function () {
             const name = this.value;
             if (!name) return;
             await loadExample(name);
         });
-
-        // Add event listeners to all "Load this example" buttons
         document.querySelectorAll('.load-example-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const exampleName = button.getAttribute('data-example');

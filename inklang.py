@@ -1,6 +1,7 @@
+# inklang.py
 import lark
 import pandas as pd
-from ml import load_dataset, train_model, predict_model, save_model, load_model
+from ml import load_dataset, train_model, predict_model, save_model, load_model, preprocess_dataset
 from utils import inkl_print
 import logging
 
@@ -16,6 +17,7 @@ statement: print_stmt
          | loadmodel_stmt
          | if_stmt
          | repeat_stmt
+         | preprocess_stmt
 
 print_stmt: "print" STRING
 dataset_stmt: "dataset" NAME "from" STRING
@@ -25,6 +27,8 @@ savemodel_stmt: "savemodel" NAME "to" STRING
 loadmodel_stmt: "loadmodel" NAME "from" STRING
 if_stmt: "if" condition ":" statement+
 repeat_stmt: "repeat" NUMBER "times" ":" statement+
+preprocess_stmt: "preprocess" NAME "with" PREPROCESS_OP ("to" NUMBER)?
+PREPROCESS_OP: "normalize" | "standardize" | "sample" | "dropna" | "onehot"
 
 condition: ACC CMP_OP NUMBER
 ACC: "acc"
@@ -110,6 +114,17 @@ class InklangRuntime:
                     count, stmts = int(stmt[1]), stmt[2]
                     for _ in range(count):
                         self.run_statements(stmts)
+                elif stmt[0] == 'preprocess':
+                    dataset_name = stmt[1]
+                    operation = stmt[2]
+                    value = float(stmt[3]) if stmt[3] else None
+                    dataset = self.datasets.get(dataset_name)
+                    if dataset is None:
+                        raise ValueError(f"[inklang] Dataset '{dataset_name}' not found")
+                    preprocessed = preprocess_dataset(dataset, operation, value)
+                    if preprocessed is not None:
+                        self.datasets[dataset_name] = preprocessed
+                        inkl_print(f"Preprocessed '{dataset_name}' with {operation}" + (f" to {value}" if value else ""))
             except Exception as e:
                 logging.error(f"Runtime error: {str(e)}")
                 inkl_print(f"Runtime error: {str(e)}")
@@ -117,15 +132,24 @@ class InklangRuntime:
 def transform_tree(node):
     if isinstance(node, lark.Tree):
         if node.data == 'start':
-            return [transform_tree(child.children[0]) for child in node.children if child.children]
+            return [transform_tree(child) for child in node.children if isinstance(child, lark.Tree)]
+        elif node.data == 'statement':
+            return transform_tree(node.children[0])
         elif node.data == 'print_stmt':
             return ('print', node.children[0].value)
         elif node.data == 'dataset_stmt':
             return ('dataset', node.children[0].value, node.children[1].value)
         elif node.data == 'train_stmt':
-            return ('train', node.children[0].value, node.children[1].value, 
-                    node.children[2].value if len(node.children) > 2 else None, 
-                    node.children[-1].value)
+            children = node.children
+            model_name = children[0].value
+            dataset_name = children[1].value
+            i = 2
+            model_type = None
+            if len(children) == 4:
+                model_type = children[2].value
+                i = 3
+            epochs = children[i].value
+            return ('train', model_name, dataset_name, model_type, epochs)
         elif node.data == 'predict_stmt':
             return ('predict', node.children[0].value, node.children[1].value)
         elif node.data == 'savemodel_stmt':
@@ -134,12 +158,18 @@ def transform_tree(node):
             return ('loadmodel', node.children[0].value, node.children[1].value)
         elif node.data == 'if_stmt':
             condition = transform_tree(node.children[0])
-            statements = [transform_tree(child.children[0]) for child in node.children[1:] if child.children]
+            statements = [transform_tree(child) for child in node.children[1:] if isinstance(child, lark.Tree)]
             return ('if', condition, statements)
         elif node.data == 'repeat_stmt':
             count = node.children[0].value
-            statements = [transform_tree(child.children[0]) for child in node.children[1:] if child.children]
+            statements = [transform_tree(child) for child in node.children[1:] if isinstance(child, lark.Tree)]
             return ('repeat', count, statements)
+        elif node.data == 'preprocess_stmt':
+            children = node.children
+            dataset_name = children[0].value
+            operation = children[1].value
+            value = children[2].value if len(children) > 2 else None
+            return ('preprocess', dataset_name, operation, value)
         elif node.data == 'condition':
             logging.debug(f"Condition node children: {node.children}")
             if len(node.children) != 3:
@@ -151,7 +181,7 @@ def transform_tree(node):
 
 def parse_and_run(code):
     try:
-        parser = lark.Lark(grammar, start='start', parser='earley', lexer='standard')
+        parser = lark.Lark(grammar, start='start', parser='earley', lexer='dynamic')
         tree = parser.parse(code)
         logging.debug(f"Parsed tree: {tree.pretty()}")
         statements = transform_tree(tree)
