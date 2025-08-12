@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inklang Limitations & Upcoming Features</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'inklang-primary': '#2563eb',
+                        'inklang-accent': '#7c3aed',
+                        'inklang-dark': '#0f172a',
+                        'inklang-light': '#f8fafc',
+                        'inklang-neon': '#FF2E63',
+                        'inklang-electric': '#00DDEB'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'mono': ['Fira Code', 'monospace'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 10px #FF2E63' },
+                            '50%': { boxShadow: '0 0 20px #00DDEB' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <script>
+        window.MonacoEnvironment = { getWorkerUrl: () => `data:text/javascript,/*monaco-worker*/` };
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
+    </script>
+    <style>
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(90deg, #FF2E63, #00DDEB);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            transform: scale(0.75);
+            transform-origin: top left;
+            width: 133.33vw;
+            height: 133.33vh;
+            overflow-x: hidden;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 0.5rem;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .code-block pre {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .btn-glow {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 46, 99, 0.5);
+        }
+
+        .animate-pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen font-sans text-slate-800 dark:text-slate-200 bg-inklang-light dark:bg-inklang-dark">
+    <div id="particles-js"></div>
+    <header class="py-8 px-4 relative">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-inklang-primary" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 7L12 12L21 7L12 2Z" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M3 12L12 17L21 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M3 17L12 22L21 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <h1 class="text-2xl font-bold">Inklang</h1>
+                </div>
+            </a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/#features" class="font-medium hover:text-inklang-primary transition-colors">Features</a>
+                <a href="/#playground" class="font-medium hover:text-inklang-primary transition-colors">Playground</a>
+                <a href="/#examples" class="font-medium hover:text-inklang-primary transition-colors">Examples</a>
+                <a href="/docs" class="font-medium hover:text-inklang-primary transition-colors">Docs</a>
+                <a href="/datasets" class="font-medium hover:text-inklang-primary transition-colors">Datasets</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button id="themeToggle"
+                    class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <svg id="themeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+                <a href="/#playground"
+                    class="px-4 py-2 bg-inklang-primary text-white rounded-md font-medium hover:bg-blue-700 transition-colors">Try
+                    It</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="py-20 px-4 relative">
+        <div class="container mx-auto max-w-5xl">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 text-center">
+                <span class="gradient-text">Inklang Limitations & Upcoming Features</span>
+            </h1>
+            <p class="text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-3xl mx-auto text-center">
+                Inklang is a minimalist language for machine learning, designed for simplicity. Below, we outline the
+                current limitations and the planned features that will address them in future versions to make Inklang a
+                comprehensive DSL for ML and data processing.
+            </p>
+        </div>
+    </section>
+
+    <section id="limitations" class="py-20 px-4 bg-white dark:bg-slate-900">
+        <div class="container mx-auto max-w-5xl">
+            <h2 class="text-4xl font-bold mb-12">Current Limitations</h2>
+            <p class="text-lg text-slate-600 dark:text-slate-400 mb-8">
+                Inklang provides a solid foundation for machine learning workflows, but it is still evolving. Below are
+                the current limitations, what users can do now, and how these constraints limit practical use. Each
+                limitation is accompanied by planned features to overcome it.
+            </p>
+
+            <div class="space-y-12">
+                <!-- Limited Model Types -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Limited Model Types</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Train
+                        models
+                        using NeuralNetwork, RandomForest, SVM, XGBoost, LinearRegression, or KMeans. For example:</p>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>acc = train svm1 with iris using SVM for 10 epochs
+acc = train lr1 with iris using LinearRegression for 10 epochs
+acc = train km1 with iris using KMeans for 10 epochs</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> Only six model types
+                        are supported, covering basic classification, regression, and clustering. Advanced models like
+                        decision trees, gradient boosting variants (beyond XGBoost), or deep learning architectures
+                        (e.g.,
+                        CNNs, RNNs) are not available. This restricts use for complex tasks like image recognition or
+                        NLP.
+                    </p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add support for advanced models like Convolutional Neural Networks (CNNs), Recurrent Neural
+                            Networks (RNNs), and Decision Trees in the <code>train</code> statement.</li>
+                        <li>Integrate with libraries like Hugging Face Transformers for pre-trained NLP models (e.g.,
+                            <code>train bert1 with dataset using BERT</code>).
+                        </li>
+                        <li>Allow custom model definitions via external scripts or configuration files.</li>
+                    </ul>
+                </div>
+
+                <!-- No Hyperparameter Tuning -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">No Hyperparameter Tuning</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Train
+                        models
+                        with default settings (e.g., 100 trees for RandomForest, 10 clusters for KMeans). For example:
+                    </p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>acc = train rf1 with iris using RandomForest for 10 epochs</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> No ability to
+                        specify
+                        hyperparameters (e.g., learning rate, number of trees, kernel type for SVM). This limits model
+                        optimization and performance tuning, critical for real-world ML tasks.</p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add hyperparameter clause to <code>train</code> statement (e.g., <code>acc = train rf1 with
+                                iris using RandomForest with n_estimators 200 learning_rate 0.01 for 10
+                                epochs</code>).</li>
+                        <li>Support grid search or random search for hyperparameter tuning (e.g., <code>grid_search rf1
+                                with iris using RandomForest</code>).</li>
+                    </ul>
+                </div>
+
+                <!-- Basic Preprocessing Options -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Basic Preprocessing Options</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Apply
+                        normalization, standardization, sampling, dropping missing values, or one-hot encoding. For
+                        example:</p>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>preprocess iris with dropna
+preprocess iris with normalize to 1.0</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> Limited to five
+                        operations. No support for advanced preprocessing like imputation (e.g., mean/median fill), PCA,
+                        or feature selection, which are essential for handling noisy or high-dimensional data.</p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add preprocessing operations like <code>impute_mean</code>, <code>impute_median</code>,
+                            <code>pca to 10</code>, and <code>select_kbest to 5</code>.
+                        </li>
+                        <li>Support custom preprocessing pipelines (e.g., <code>pipeline iris with normalize then
+                                pca</code>).</li>
+                    </ul>
+                </div>
+
+                <!-- No Data Splitting or Cross-Validation -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">No Data Splitting or Cross-Validation</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Train
+                        models
+                        with an internal 80/20 train-test split, but you cannot control the split or perform
+                        cross-validation. For example:</p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>acc = train rf1 with iris using RandomForest for 10 epochs</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> Fixed 80/20 split
+                        limits flexibility. No cross-validation support means less robust model evaluation, especially
+                        for
+                        small datasets.</p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add <code>split</code> statement (e.g., <code>split iris into train test with ratio
+                                0.8</code>).</li>
+                        <li>Add <code>cross_validate</code> statement (e.g., <code>cv_acc = cross_validate rf1 with iris
+                                folds 5</code>).</li>
+                    </ul>
+                </div>
+
+                <!-- Limited Evaluation Metrics -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Limited Evaluation Metrics</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Use
+                        <code>acc</code> variable for accuracy (classification), R² (regression), or silhouette score
+                        (clustering). For example:
+                    </p>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>acc = train svm1 with iris using SVM for 10 epochs
+if acc > 0.9:
+    print "Good accuracy!"</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> Only one metric per
+                        model type is available. No support for precision, recall, F1-score, or confusion matrices,
+                        which
+                        are critical for imbalanced datasets or detailed analysis.</p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add <code>evaluate</code> statement returning a dictionary of metrics (e.g., <code>metrics =
+                                evaluate rf1 with iris</code>, accessing <code>metrics.precision</code>).</li>
+                        <li>Support confusion matrix output and other metrics like MSE, ROC-AUC.</li>
+                    </ul>
+                </div>
+
+                <!-- No Visualization Support -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">No Visualization Support</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Output text
+                        results via <code>print</code> (e.g., predictions, metrics). For example:</p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>predict rf1 with iris</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> No way to visualize
+                        data distributions, feature correlations, or model performance (e.g., confusion matrices,
+                        ROC curves), limiting data exploration and interpretability.</p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add <code>plot</code> statement for data and metrics (e.g., <code>plot iris column
+                                "feature1"</code>, <code>plot confusion rf1 with iris</code>).</li>
+                        <li>Generate and display images in the playground using Matplotlib or Seaborn.</li>
+                    </ul>
+                </div>
+
+                <!-- Limited Variable and Expression Support -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Limited Variable and Expression Support</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Use
+                        <code>acc</code> variable for model metrics in <code>if</code> statements. For example:
+                    </p>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>if acc > 0.9:
+    print "High accuracy!"</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> Only
+                        <code>acc</code>
+                        is supported; no custom variables or mathematical expressions (e.g., <code>acc * 100</code>),
+                        limiting complex logic or parameter reuse.
+                    </p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add <code>var</code> statement for custom variables (e.g., <code>var ratio = 0.8</code>).
+                        </li>
+                        <li>Support basic expressions (e.g., <code>var score = acc * 100</code>).</li>
+                    </ul>
+                </div>
+
+                <!-- No Model Deployment -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">No Model Deployment</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Save models
+                        to pickle files and load them for predictions. For example:</p>
+                    <div class="code-block mb-4">
+                        <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>savemodel rf1 to "rf1.pkl"
+loadmodel rf1 from "rf1.pkl"</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> No support for
+                        deploying models as APIs or integrating with production environments (e.g., Flask, ONNX, or
+                        cloud
+                        services), limiting real-world use.</p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add <code>deploy</code> statement (e.g., <code>deploy rf1 to "api_endpoint" format
+                                "onnx"</code>).</li>
+                        <li>Generate serving code (e.g., Flask/FastAPI) or export to ONNX/TensorFlow Serving.</li>
+                    </ul>
+                </div>
+
+                <!-- No Support for Large or Streaming Data -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">No Support for Large or Streaming Data</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Load entire
+                        datasets (CSV, JSON, or built-in) into memory. For example:</p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>dataset mnist from "mnist"</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> Loading full
+                        datasets
+                        limits scalability for large datasets (e.g., >1GB) or streaming data, causing memory issues.</p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add <code>batch_load</code> statement (e.g., <code>batch_load dataset from "large.csv" size
+                                1000</code>).</li>
+                        <li>Support incremental training for streaming data.</li>
+                    </ul>
+                </div>
+
+                <!-- Limited Integration with External Tools -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Limited Integration with External Tools</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>What You Can Do Now:</strong> Work with
+                        local CSV/JSON files or built-in datasets (mnist, fashion_mnist, cifar10). For example:</p>
+                    <div class="code-block mb-4">
+                        <pre
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>dataset iris from "iris.csv"</code></pre>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Limitation:</strong> No integration with
+                        external ML platforms (e.g., Hugging Face, cloud storage like S3), limiting access to
+                        pre-trained
+                        models or remote data.</p>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4"><strong>Upcoming Features:</strong></p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li>Add <code>import</code> statement for external models (e.g., <code>import model from
+                                "huggingface:bert-base"</code>).</li>
+                        <li>Support cloud storage access (e.g., <code>dataset data from "s3://bucket/data.csv"</code>).
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2 class="text-4xl font-bold mb-12 mt-16">Future Vision</h2>
+            <p class="text-lg text-slate-600 dark:text-slate-400 mb-8">
+                Inklang aims to be a comprehensive DSL for machine learning and data processing, balancing simplicity
+                with
+                power. Future versions will address these limitations to support:
+            </p>
+            <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-8">
+                <li>Advanced ML workflows, including deep learning, NLP, and computer vision.</li>
+                <li>Production-ready deployment with APIs and cloud integration.</li>
+                <li>Scalable data handling for big data and real-time applications.</li>
+                <li>Rich visualization and evaluation tools for better interpretability.</li>
+                <li>Community-driven extensions via external model imports and custom scripts.</li>
+            </ul>
+            <p class="text-lg text-slate-600 dark:text-slate-400">
+                We are committed to evolving Inklang based on user feedback. Join our <a
+                    href="https://github.com/aditya-manohar/inklang" target="_blank"
+                    class="text-inklang-primary hover:underline">GitHub</a> or <a href="/discord"
+                    class="text-inklang-primary hover:underline">Discord</a> to contribute ideas or report issues.
+            </p>
+        </div>
+    </section>
+
+    <footer class="py-12 px-4 bg-slate-900 text-slate-400">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Inklang</h3>
+                    <p class="text-sm">A minimalist language for machine learning with elegant syntax and powerful
+                        capabilities.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Resources</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/docs" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="/limitations" class="hover:text-white transition-colors">Limitations</a></li>
+                        <li><a href="/" class="hover:text-white transition-colors">Tutorials</a></li>
+                        <li><a href="/#examples" class="hover:text-white transition-colors">Examples</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Community</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/discord" class="hover:text-white transition-colors">Discord</a></li>
+                        <li><a href="https://github.com/aditya-manohar/inklang" target="_blank"
+                                class="hover:text-white transition-colors">GitHub</a></li>
+                        <li><a href="https://x.com/ManoharAdi36395" target="_blank"
+                                class="hover:text-white transition-colors">X</a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Legal</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="/license" class="hover:text-white transition-colors">License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 mt-12 pt-8 text-center text-sm">
+                <p>&copy; 2025 Inklang. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#FF2E63' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#00DDEB', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: 'none', random: true }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' } },
+                modes: { grab: { distance: 200, line_linked: { opacity: 1 } }, push: { particles_nb: 5 } }
+            },
+            retina_detect: true
+        });
+
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeIcon.innerHTML = isDark ?
+                `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />` :
+                `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />`;
+        });
+
+        if (localStorage.getItem('theme') === 'dark' ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'))) {
+            document.documentElement.classList.add('dark');
+            themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />`;
+        }
+    </script>
+</body>
+
+</html>

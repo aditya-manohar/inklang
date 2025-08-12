@@ -31,6 +31,10 @@ def index():
 def docs():
     return render_template('doc.html')
 
+@app.route('/limitations')
+def limitations():
+    return render_template('limitations.html')
+
 @app.route('/datasets')
 def datasets():
     return render_template('datasets.html')
