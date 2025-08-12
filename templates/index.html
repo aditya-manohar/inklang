@@ -153,7 +153,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.3;
+            opacity: 0.5;
         }
 
         .feature-card {
@@ -162,6 +162,52 @@
 
         .feature-card:hover {
             transform: translateY(-4px);
+        }
+
+        #output::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        #output::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 8px;
+            margin: 4px;
+        }
+
+        #output::-webkit-scrollbar-thumb {
+            background: #2563eb;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: background 0.3s ease;
+        }
+
+        #output::-webkit-scrollbar-thumb:hover {
+            background: #1e40af;
+        }
+
+        /* Dark mode adjustments */
+        .dark #output::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        .dark #output::-webkit-scrollbar-thumb {
+            background: #7c3aed;
+            /* Inklang accent color for dark mode */
+            border: 2px solid transparent;
+        }
+
+        .dark #output::-webkit-scrollbar-thumb:hover {
+            background: #6b21a8;
+        }
+
+        #output {
+            scrollbar-width: thin;
+            scrollbar-color: #2563eb transparent;
+        }
+
+        .dark #output {
+            scrollbar-color: #1e293b transparent;
         }
     </style>
 </head>
@@ -295,20 +341,20 @@
                         </button>
                         <select id="examples"
                             class="px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-800 dark:text-slate-200">
-                            <option value="">Load example...</option>
-                            <option value="basic_print_if.inkl">Basic Print and If</option>
-                            <option value="repeat_print.inkl">Repeat and Print Loop</option>
-                            <option value="combined_basic.inkl">Combined Basic Syntax</option>
-                            <option value="mnist_neural.inkl">MNIST Neural Network</option>
-                            <option value="iris_randomforest.inkl">Iris RandomForest</option>
-                            <option value="repeat_example.inkl">Repeat Demo</option>
-                            <option value="load_predict.inkl">Load & Predict</option>
-                            <option value="preprocess_example.inkl">Data Preprocessing</option>
-                            <option value="full_workflow.inkl">Full Workflow</option>
-                            <option value="multiple_preprocess.inkl">Multiple Preprocess Steps</option>
-                            <option value="onehot_example.inkl">One-Hot Encoding</option>
-                            <option value="repeat_training.inkl">Repeat for Multiple Training</option>
-                            <option value="save_load_predict.inkl">Save, Load, and Predict</option>
+                            <option value="" class="text-xs">Load example...</option>
+                            <option value="basic_print_if.inkl" class="text-xs">Basic Print and If</option>
+                            <option value="repeat_print.inkl" class="text-xs">Repeat and Print Loop</option>
+                            <option value="combined_basic.inkl" class="text-xs">Combined Basic Syntax</option>
+                            <option value="mnist_neural.inkl" class="text-xs">MNIST Neural Network</option>
+                            <option value="iris_randomforest.inkl" class="text-xs">Iris RandomForest</option>
+                            <option value="repeat_example.inkl" class="text-xs">Repeat Demo</option>
+                            <option value="load_predict.inkl" class="text-xs">Load & Predict</option>
+                            <option value="preprocess_example.inkl" class="text-xs">Data Preprocessing</option>
+                            <option value="full_workflow.inkl" class="text-xs">Full Workflow</option>
+                            <option value="multiple_preprocess.inkl" class="text-xs">Multiple Preprocess Steps</option>
+                            <option value="onehot_example.inkl" class="text-xs">One-Hot Encoding</option>
+                            <option value="repeat_training.inkl" class="text-xs">Repeat for Multiple Training</option>
+                            <option value="save_load_predict.inkl" class="text-xs">Save, Load, and Predict</option>
                         </select>
                     </div>
                     <div class="mt-8">
@@ -587,13 +633,12 @@ print "Model saved, loaded, and predicted."</code></pre>
         </div>
     </footer>
     <script>
-        // Initialize particles.js
         particlesJS('particles-js', {
             particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
+                number: { value: 120, density: { enable: true, value_area: 400 } },
                 color: { value: '#FF2E63' },
                 shape: { type: 'circle' },
-                opacity: { value: 0.5, random: true },
+                opacity: { value: 0.8, random: true },
                 size: { value: 3, random: true },
                 line_linked: { enable: true, distance: 150, color: '#00DDEB', opacity: 0.4, width: 1 },
                 move: { enable: true, speed: 2, direction: 'none', random: true }
@@ -606,7 +651,6 @@ print "Model saved, loaded, and predicted."</code></pre>
             retina_detect: true
         });
 
-        // Initialize Monaco Editor
         let editor = null;
         require(['vs/editor/editor.main'], function () {
             monaco.languages.register({ id: 'inklang' });
@@ -635,7 +679,7 @@ savemodel rf1 to "rf1.pkl"
                 theme: 'vs-dark',
                 automaticLayout: true,
                 fontFamily: 'Fira Code',
-                fontSize: 14,
+                fontSize: 16,
                 minimap: { enabled: false },
                 scrollBeyondLastLine: false
             });
@@ -647,7 +691,6 @@ savemodel rf1 to "rf1.pkl"
             syncEditorTheme();
         });
 
-        // Theme toggle functionality
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         themeToggle.addEventListener('click', () => {
@@ -708,10 +751,8 @@ savemodel rf1 to "rf1.pkl"
             }
         });
 
-        // Helper function to load examples
         async function loadExample(name) {
             try {
-                // Scroll to playground smoothly
                 document.getElementById('playground').scrollIntoView({
                     behavior: 'smooth'
                 });
