@@ -21,13 +21,14 @@ statement: print_stmt
 
 print_stmt: "print" STRING
 dataset_stmt: "dataset" NAME "from" STRING
-train_stmt: "acc" "=" "train" NAME "with" NAME ("using" NAME)? "for" NUMBER "epochs"
+train_stmt: "acc" "=" "train" NAME "with" NAME ("using" MODEL_TYPE)? "for" NUMBER "epochs"
 predict_stmt: "predict" NAME "with" NAME
 savemodel_stmt: "savemodel" NAME "to" STRING
 loadmodel_stmt: "loadmodel" NAME "from" STRING
 if_stmt: "if" condition ":" statement+
 repeat_stmt: "repeat" NUMBER "times" ":" statement+
 preprocess_stmt: "preprocess" NAME "with" PREPROCESS_OP ("to" NUMBER)?
+MODEL_TYPE: "NeuralNetwork" | "RandomForest" | "SVM" | "XGBoost" | "LinearRegression" | "KMeans"
 PREPROCESS_OP: "normalize" | "standardize" | "sample" | "dropna" | "onehot"
 
 condition: ACC CMP_OP NUMBER

@@ -219,8 +219,8 @@
                     <h4 class="text-xl font-semibold mb-4">Dataset Statement</h4>
                     <p class="text-slate-600 dark:text-slate-400 mb-4">Loads a dataset into memory from a file (CSV or
                         JSON) or a built-in dataset (e.g., <code>mnist</code>, <code>fashion_mnist</code>,
-                        <code>cifar10</code>). The dataset must have a <code>label</code> column as the target
-                        variable.
+                        <code>cifar10</code>). The dataset must have a <code>label</code> column for supervised
+                        learning.
                     </p>
                     <p class="font-bold mb-2">Syntax:</p>
                     <div class="code-block mb-4">
@@ -234,7 +234,9 @@ dataset mnist from "mnist"</code></pre>
                     </div>
                     <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: <code>NAME</code> is the dataset
                         identifier; <code>STRING</code> is a file path (e.g., <code>"iris.csv"</code>) or built-in
-                        dataset name (e.g., <code>"mnist"</code>).</p>
+                        dataset name (e.g., <code>"mnist"</code>). For unsupervised learning (e.g., KMeans), the
+                        <code>label</code> column is optional.
+                    </p>
                 </div>
 
                 <!-- Preprocess Statement -->
@@ -273,7 +275,7 @@ preprocess iris with standardize</code></pre>
                     <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: Operations are applied in sequence;
                         <code>to NUMBER</code> is required for <code>sample</code> and optional for
                         <code>normalize</code>. Ensure the dataset has a <code>label</code> column if used for
-                        training.
+                        supervised training.
                     </p>
                 </div>
 
@@ -281,22 +283,36 @@ preprocess iris with standardize</code></pre>
                 <div>
                     <h4 class="text-xl font-semibold mb-4">Train Statement</h4>
                     <p class="text-slate-600 dark:text-slate-400 mb-4">Trains a model on a dataset and stores its
-                        accuracy in the <code>acc</code> variable. Supports <code>NeuralNetwork</code> (default) and
-                        <code>RandomForest</code>.
-                    </p>
+                        performance metric (accuracy for classification, R² for regression, silhouette score for
+                        clustering) in the <code>acc</code> variable.</p>
                     <p class="font-bold mb-2">Syntax:</p>
                     <div class="code-block mb-4">
                         <pre
-                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>acc = train NAME with NAME ["using" NAME] for NUMBER epochs</code></pre>
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>acc = train NAME with NAME ["using" MODEL_TYPE] for NUMBER epochs</code></pre>
                     </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-2">Supported Models:</p>
+                    <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 mb-4">
+                        <li><code>NeuralNetwork</code>: Feedforward neural network (128 hidden units, ReLU, dropout
+                            0.2).</li>
+                        <li><code>RandomForest</code>: Random forest classifier (100 trees).</li>
+                        <li><code>SVM</code>: Support Vector Machine classifier (linear kernel).</li>
+                        <li><code>XGBoost</code>: Gradient boosting classifier (log-loss metric).</li>
+                        <li><code>LinearRegression</code>: Linear regression for regression tasks (uses R² metric).</li>
+                        <li><code>KMeans</code>: K-means clustering (10 clusters, uses silhouette score).</li>
+                    </ul>
                     <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
                     <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>acc = train nn1 with mnist using NeuralNetwork for 10 epochs
-acc = train rf1 with iris using RandomForest for 100 epochs</code></pre>
+acc = train rf1 with iris using RandomForest for 100 epochs
+acc = train svm1 with iris using SVM for 10 epochs
+acc = train xgb1 with iris using XGBoost for 10 epochs
+acc = train lr1 with iris using LinearRegression for 10 epochs
+acc = train km1 with iris using KMeans for 10 epochs</code></pre>
                     </div>
-                    <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: <code>using NAME</code> is optional
+                    <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: <code>using MODEL_TYPE</code> is optional
                         (defaults to <code>NeuralNetwork</code>); <code>NUMBER</code> must be an integer for epochs.
-                        Dataset must have a <code>label</code> column.</p>
+                        For supervised models, dataset must have a <code>label</code> column; for KMeans, it is
+                        optional.</p>
                 </div>
 
                 <!-- Predict Statement -->
@@ -312,7 +328,7 @@ acc = train rf1 with iris using RandomForest for 100 epochs</code></pre>
                     <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
                     <div class="code-block">
                         <pre
-                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>predict rf1 with iris</code></pre>
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>predict svm1 with iris</code></pre>
                     </div>
                     <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: Outputs up to 10 predictions followed by
                         the total count. Dataset may or may not have a <code>label</code> column.</p>
@@ -331,7 +347,7 @@ acc = train rf1 with iris using RandomForest for 100 epochs</code></pre>
                     <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
                     <div class="code-block">
                         <pre
-                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>savemodel rf1 to "rf1.pkl"</code></pre>
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>savemodel svm1 to "svm1.pkl"</code></pre>
                     </div>
                     <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: The file is saved in the
                         <code>Uploads</code> directory and automatically downloaded in the playground.
@@ -350,7 +366,7 @@ acc = train rf1 with iris using RandomForest for 100 epochs</code></pre>
                     <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
                     <div class="code-block">
                         <pre
-                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>loadmodel rf1 from "rf1.pkl"</code></pre>
+                            class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>loadmodel svm1 from "svm1.pkl"</code></pre>
                     </div>
                     <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: The file must exist in the
                         <code>Uploads</code> directory.
@@ -372,11 +388,12 @@ acc = train rf1 with iris using RandomForest for 100 epochs</code></pre>
                     <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>if acc > 0.95:
     print "Excellent accuracy!"
-    savemodel rf1 to "rf1.pkl"</code></pre>
+    savemodel svm1 to "svm1.pkl"</code></pre>
                     </div>
                     <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: <code>CMP_OP</code> is <code>></code>,
                         <code><</code>, <code>==</code>, <code>>=</code>, <code><=</code>, or <code>!=</code>.
-                        Indentation is recommended but not required.
+                        Indentation is recommended but not required. For <code>LinearRegression</code>, <code>acc</code>
+                        is R²; for <code>KMeans</code>, it is silhouette score.
                     </p>
                 </div>
 
@@ -394,7 +411,7 @@ acc = train rf1 with iris using RandomForest for 100 epochs</code></pre>
                     <div class="code-block">
                         <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code>repeat 3 times:
     print "Training iteration"
-    acc = train nn1 with mnist for 5 epochs</code></pre>
+    acc = train svm1 with iris using SVM for 5 epochs</code></pre>
                     </div>
                     <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: <code>NUMBER</code> must be an integer.
                         Indentation is recommended but not required.</p>
@@ -413,7 +430,7 @@ dataset NAME from STRING
 preprocess NAME with (normalize | standardize | sample | dropna | onehot) ["to" NUMBER]
 
 # Train model
-acc = train NAME with NAME [using (NeuralNetwork | RandomForest)] for NUMBER epochs
+acc = train NAME with NAME [using (NeuralNetwork | RandomForest | SVM | XGBoost | LinearRegression | KMeans)] for NUMBER epochs
 
 # Make predictions
 predict NAME with NAME
@@ -435,9 +452,8 @@ repeat NUMBER times :
             </div>
             <p class="text-slate-600 dark:text-slate-400 mt-4">Notes: Indentation is optional but recommended (4 spaces
                 or 1 tab) for readability in <code>if</code> and <code>repeat</code> blocks. Datasets must have a
-                <code>label</code> column for training. The <code>to NUMBER</code> clause is required for
-                <code>sample</code>, optional for <code>normalize</code>, and not allowed for
-                <code>standardize</code>, <code>dropna</code>, or <code>onehot</code>.
+                <code>label</code> column for supervised models; optional for KMeans. The <code>acc</code> variable
+                holds accuracy (classification), R² (regression), or silhouette score (clustering).
             </p>
 
             <h3 class="text-2xl font-bold mb-6 mt-12">Supported Datasets and Models</h3>
@@ -457,7 +473,7 @@ repeat NUMBER times :
                 <div>
                     <h4 class="text-xl font-semibold mb-4">File-based Datasets</h4>
                     <p class="text-slate-600 dark:text-slate-400 mb-4">Load datasets from CSV or JSON files. The file
-                        must have a <code>label</code> column for training. Files should be uploaded to the
+                        must have a <code>label</code> column for supervised learning. Files should be uploaded to the
                         <code>Uploads</code> directory.
                     </p>
                     <p class="text-slate-600 dark:text-slate-400 mb-2">Example:</p>
@@ -469,20 +485,27 @@ repeat NUMBER times :
                 <div>
                     <h4 class="text-xl font-semibold mb-4">Supported Models</h4>
                     <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 space-y-2">
-                        <li><code>NeuralNetwork</code>: A feedforward neural network with one hidden layer (128 units,
-                            ReLU activation) and dropout (0.2).</li>
-                        <li><code>RandomForest</code>: A random forest classifier with 100 trees.</li>
+                        <li><code>NeuralNetwork</code>: Feedforward neural network with one hidden layer (128 units,
+                            ReLU activation, dropout 0.2, softmax output).</li>
+                        <li><code>RandomForest</code>: Random forest classifier with 100 trees.</li>
+                        <li><code>SVM</code>: Support Vector Machine classifier with linear kernel.</li>
+                        <li><code>XGBoost</code>: Gradient boosting classifier with log-loss metric.</li>
+                        <li><code>LinearRegression</code>: Linear regression model for regression tasks (uses R²
+                            metric).</li>
+                        <li><code>KMeans</code>: K-means clustering with 10 clusters (uses silhouette score).</li>
                     </ul>
                     <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: Specify the model type in the
-                        <code>using NAME</code> clause of the <code>train</code> statement. If omitted, defaults to
-                        <code>NeuralNetwork</code>.
+                        <code>using MODEL_TYPE</code> clause of the <code>train</code> statement. If omitted, defaults
+                        to
+                        <code>NeuralNetwork</code>. Supervised models require a <code>label</code> column; KMeans does
+                        not.
                     </p>
                 </div>
             </div>
 
             <h3 class="text-2xl font-bold mb-6 mt-12">Example Workflow</h3>
             <p class="text-slate-600 dark:text-slate-400 mb-4">A complete example demonstrating preprocessing,
-                training, and conditional logic:</p>
+                training, and conditional logic with different model types:</p>
             <div class="code-block">
                 <pre class="p-4 text-sm font-mono text-slate-200 overflow-auto"><code># Load and preprocess dataset
 dataset iris from "iris.csv"
@@ -490,20 +513,35 @@ preprocess iris with dropna
 preprocess iris with sample to 0.5
 preprocess iris with normalize to 1.0
 
-# Train model
+# Train different models
 acc = train rf1 with iris using RandomForest for 10 epochs
-
-# Check accuracy
 if acc > 0.9:
-    print "Great accuracy!"
+    print "Great RandomForest accuracy!"
     savemodel rf1 to "rf1.pkl"
 
+acc = train svm1 with iris using SVM for 10 epochs
+if acc > 0.9:
+    print "Great SVM accuracy!"
+    savemodel svm1 to "svm1.pkl"
+
+acc = train lr1 with iris using LinearRegression for 10 epochs
+if acc > 0.7:
+    print "Good R² for LinearRegression!"
+    savemodel lr1 to "lr1.pkl"
+
+# Train clustering model
+dataset iris_no_labels from "iris_no_labels.csv"
+acc = train km1 with iris_no_labels using KMeans for 10 epochs
+if acc > 0.5:
+    print "Good silhouette score for KMeans!"
+    savemodel km1 to "km1.pkl"
+
 # Make predictions
-predict rf1 with iris</code></pre>
+predict svm1 with iris</code></pre>
             </div>
-            <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: This workflow loads the Iris dataset, removes
-                missing values, samples 50% of the rows, normalizes features, trains a RandomForest model, saves it if
-                accuracy exceeds 0.9, and makes predictions.</p>
+            <p class="text-slate-600 dark:text-slate-400 mt-2">Notes: This workflow loads the Iris dataset, preprocesses
+                it, trains multiple models (RandomForest, SVM, LinearRegression, KMeans), saves models if performance is
+                good, and makes predictions with SVM.</p>
         </div>
     </section>
 

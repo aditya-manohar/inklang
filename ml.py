@@ -7,6 +7,9 @@ from tensorflow.keras import layers, datasets
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.linear_model import LinearRegression
+from sklearn.cluster import KMeans
 import pickle
 from utils import inkl_print
 import logging
@@ -38,7 +41,7 @@ def load_dataset(dataset_name: str, path: str = None):
             df['label'] = y
             logging.debug(f"Loaded built-in dataset '{dataset_name}' rows={len(df)} cols={len(df.columns)}")
         elif path:
-            full_path = os.path.join("uploads", path)
+            full_path = os.path.join("Uploads", path)
             logging.debug(f"Loading dataset from file: {full_path}")
             if path.endswith('.csv'):
                 df = pd.read_csv(full_path)
@@ -46,8 +49,8 @@ def load_dataset(dataset_name: str, path: str = None):
                 df = pd.read_json(full_path)
             else:
                 raise ValueError(f"[inklang] Unsupported file format: {path}")
-            if 'label' not in df.columns:
-                raise ValueError(f"[inklang] Dataset must have a 'label' column. Found columns: {list(df.columns)}")
+            if 'label' not in df.columns and dataset_name != "KMeans":
+                raise ValueError(f"[inklang] Dataset must have a 'label' column for supervised learning. Found columns: {list(df.columns)}")
             logging.debug(f"Loaded dataset from '{full_path}' rows={len(df)} cols={len(df.columns)}")
         elif isinstance(dataset_name, pd.DataFrame):
             df = dataset_name
@@ -65,28 +68,53 @@ def train_model(model_name: str, dataset, model_type: str, epochs: int):
         logging.debug(f"Training model '{model_name}' with {model_type}, epochs={epochs}")
         if not isinstance(dataset, pd.DataFrame):
             raise ValueError(f"[inklang] Dataset must be a DataFrame, got {type(dataset)}")
-        X = dataset.drop('label', axis=1).values
-        y = dataset['label'].values
+        
+        is_clustering = model_type == "KMeans"
+        X = dataset.drop('label', axis=1).values if 'label' in dataset.columns else dataset.values
+        y = dataset['label'].values if 'label' in dataset.columns else None
+        
+        if not is_clustering and y is None:
+            raise ValueError(f"[inklang] Dataset must have a 'label' column for {model_type}")
+        
         from sklearn.model_selection import train_test_split
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        if is_clustering:
+            X_train, X_test = X, None
+            y_train, y_test = None, None
+        else:
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         
         if model_type == "RandomForest":
             model = RandomForestClassifier(n_estimators=100, random_state=42)
             model.fit(X_train, y_train)
             accuracy = model.score(X_test, y_test)
+        elif model_type == "SVM":
+            model = SVC(random_state=42)
+            model.fit(X_train, y_train)
+            accuracy = model.score(X_test, y_test)
+        elif model_type == "LinearRegression":
+            model = LinearRegression()
+            model.fit(X_train, y_train)
+            from sklearn.metrics import r2_score
+            accuracy = r2_score(y_test, model.predict(X_test))
+        elif model_type == "KMeans":
+            model = KMeans(n_clusters=10, random_state=42)
+            model.fit(X)
+            from sklearn.metrics import silhouette_score
+            accuracy = silhouette_score(X, model.labels_) if len(np.unique(model.labels_)) > 1 else 0.0
         else:
             model = keras.Sequential([
                 layers.Flatten(input_shape=(X_train.shape[1],)),
                 layers.Dense(128, activation='relu'),
                 layers.Dropout(0.2),
-                layers.Dense(len(np.unique(y)), activation='softmax')
+                layers.Dense(len(np.unique(y)) if y is not None else 10, activation='softmax')
             ])
             model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
             model.fit(X_train, y_train, epochs=epochs, batch_size=64, verbose=2)
             _, accuracy = model.evaluate(X_test, y_test, verbose=0)
         
-        logging.debug(f"Trained model '{model_name}'. Metric: {accuracy:.4f}")
-        inkl_print(f"Trained model '{model_name}'. Metric: {accuracy:.4f}")
+        metric_name = "silhouette_score" if model_type == "KMeans" else "R²" if model_type == "LinearRegression" else "accuracy"
+        logging.debug(f"Trained model '{model_name}'. {metric_name}: {accuracy:.4f}")
+        inkl_print(f"Trained model '{model_name}'. {metric_name}: {accuracy:.4f}")
         return model, accuracy
     except Exception as e:
         logging.error(f"Error during training: {str(e)}")
@@ -99,7 +127,7 @@ def predict_model(model, dataset):
         if not isinstance(dataset, pd.DataFrame):
             raise ValueError(f"[inklang] Dataset must be a DataFrame, got {type(dataset)}")
         X = dataset.drop('label', axis=1).values if 'label' in dataset.columns else dataset.values
-        if isinstance(model, RandomForestClassifier):
+        if isinstance(model, (RandomForestClassifier, SVC, xgb.XGBClassifier, LinearRegression, KMeans)):
             predictions = model.predict(X)
         else:
             predictions = model.predict(X)
