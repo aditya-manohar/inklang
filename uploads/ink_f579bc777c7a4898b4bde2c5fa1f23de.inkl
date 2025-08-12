@@ -1,0 +1,12 @@
+# Full workflow example
+dataset iris from "iris.csv"
+preprocess iris with dropna
+preprocess iris with standardize
+acc = train rf1 with iris using RandomForest for 5 epochs
+if acc >= 0.95:
+    print "High accuracy achieved!"
+predict rf1 with iris
+savemodel rf1 to "iris_model.pkl"
+loadmodel rf_loaded from "iris_model.pkl"
+predict rf_loaded with iris
+print "Workflow complete."
